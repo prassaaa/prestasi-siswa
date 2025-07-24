@@ -4,6 +4,7 @@ namespace App\Listeners;
 
 use App\Events\LombaCreated;
 use App\Mail\LombaNotificationMail;
+use App\Models\Notifikasi;
 use App\Models\Siswa;
 use App\Models\User;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -29,15 +30,23 @@ class SendLombaNotification implements ShouldQueue
     public function handle(LombaCreated $event): void
     {
         $lomba = $event->lomba;
-        
+
         // Ambil semua siswa yang terverifikasi (dengan user aktif)
         $siswa = Siswa::whereHas('user', function($query) {
             $query->where('is_active', true);
         })->get();
-        
-        // Kirim email ke setiap siswa
+
+        // Kirim email dan buat notifikasi database untuk setiap siswa
         foreach($siswa as $s) {
-            // Perbaikan: Gunakan try-catch untuk menghindari error jika ada masalah dengan email
+            // Buat notifikasi di database
+            Notifikasi::create([
+                'user_id' => $s->user_id,
+                'judul' => 'Lomba Baru: ' . $lomba->nama_lomba,
+                'pesan' => 'Lomba baru "' . $lomba->nama_lomba . '" telah dibuka. Jenis: ' . $lomba->jenis_lomba . ', Tingkat: ' . $lomba->tingkat . '. Segera daftarkan diri Anda!',
+                'dibaca' => false,
+            ]);
+
+            // Kirim email notification
             try {
                 Mail::to($s->email)->send(new LombaNotificationMail($lomba, $s));
             } catch (\Exception $e) {

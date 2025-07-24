@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Events\SiswaRegistered;
 use App\Http\Controllers\Controller;
 use App\Models\Sekolah;
 use App\Models\Siswa;
@@ -19,7 +20,7 @@ class RegisterSiswaController extends Controller
         $sekolah = Sekolah::all();
         return view('auth.register-siswa', compact('sekolah'));
     }
-    
+
     public function store(Request $request)
     {
         $request->validate([
@@ -34,7 +35,7 @@ class RegisterSiswaController extends Controller
             'sekolah_id' => 'required|exists:sekolah,id',
             'no_hp' => 'nullable|string|max:15',
         ]);
-        
+
         // Buat user
         $user = User::create([
             'name' => $request->nama,
@@ -42,7 +43,7 @@ class RegisterSiswaController extends Controller
             'password' => Hash::make($request->password),
             'role_id' => 2, // Siswa
         ]);
-        
+
         // Buat siswa
         $siswa = Siswa::create([
             'user_id' => $user->id,
@@ -57,11 +58,12 @@ class RegisterSiswaController extends Controller
             'password' => Hash::make($request->password),
             'no_hp' => $request->no_hp,
         ]);
-        
+
         event(new Registered($user));
-        
+        event(new SiswaRegistered($siswa));
+
         Auth::login($user);
-        
+
         return redirect()->route('siswa.dashboard');
     }
 }

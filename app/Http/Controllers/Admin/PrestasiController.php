@@ -93,6 +93,12 @@ class PrestasiController extends Controller
             'user_id' => $siswa->user_id,
             'judul' => 'Prestasi Baru Ditambahkan',
             'pesan' => 'Admin telah menambahkan prestasi baru: ' . $request->nama_prestasi,
+            'type' => 'info',
+            'priority' => 'normal',
+            'data' => [
+                'prestasi_id' => $prestasi->id,
+                'action_url' => route('siswa.prestasi.show', $prestasi->id)
+            ],
             'dibaca' => false,
         ]);
 
@@ -169,10 +175,20 @@ class PrestasiController extends Controller
                 'rejected' => 'ditolak',
             ];
 
+            $notificationType = $request->status_verifikasi == 'approved' ? 'success' :
+                               ($request->status_verifikasi == 'rejected' ? 'error' : 'info');
+
             Notifikasi::create([
                 'user_id' => $prestasi->siswa->user_id,
                 'judul' => 'Status Prestasi Diperbarui',
                 'pesan' => 'Status prestasi "' . $prestasi->nama_prestasi . '" telah ' . $statusText[$request->status_verifikasi] . '.',
+                'type' => $notificationType,
+                'priority' => 'normal',
+                'data' => [
+                    'prestasi_id' => $prestasi->id,
+                    'status' => $request->status_verifikasi,
+                    'action_url' => route('siswa.prestasi.show', $prestasi->id)
+                ],
                 'dibaca' => false,
             ]);
         }
@@ -219,15 +235,107 @@ class PrestasiController extends Controller
         // Kirim notifikasi ke siswa
         $statusText = $request->status_verifikasi == 'approved' ? 'disetujui' : 'ditolak';
 
+        $notificationType = $request->status_verifikasi == 'approved' ? 'success' : 'error';
+        $priority = $request->status_verifikasi == 'approved' ? 'normal' : 'high';
+
         Notifikasi::create([
             'user_id' => $prestasi->siswa->user_id,
             'judul' => 'Prestasi ' . ucfirst($statusText),
             'pesan' => 'Prestasi "' . $prestasi->nama_prestasi . '" telah ' . $statusText .
                      ($request->catatan_verifikasi ? '. Catatan: ' . $request->catatan_verifikasi : '.'),
+            'type' => $notificationType,
+            'priority' => $priority,
+            'data' => [
+                'prestasi_id' => $prestasi->id,
+                'status' => $request->status_verifikasi,
+                'catatan' => $request->catatan_verifikasi,
+                'action_url' => route('siswa.prestasi.show', $prestasi->id)
+            ],
             'dibaca' => false,
         ]);
 
         return redirect()->route('admin.prestasi.index')
             ->with('success', 'Prestasi berhasil ' . $statusText . '.');
+    }
+
+    /**
+     * Bulk approve prestasi
+     */
+    public function bulkApprove(Request $request)
+    {
+        $request->validate([
+            'prestasi_ids' => 'required|array',
+            'prestasi_ids.*' => 'exists:prestasi,id',
+            'catatan_verifikasi' => 'nullable|string'
+        ]);
+
+        $prestasi = Prestasi::whereIn('id', $request->prestasi_ids)
+            ->where('status_verifikasi', 'pending')
+            ->get();
+
+        foreach ($prestasi as $p) {
+            $p->update([
+                'status_verifikasi' => 'approved',
+                'catatan_verifikasi' => $request->catatan_verifikasi
+            ]);
+
+            // Kirim notifikasi ke siswa
+            Notifikasi::create([
+                'user_id' => $p->siswa->user_id,
+                'judul' => 'Prestasi Disetujui (Bulk)',
+                'pesan' => 'Prestasi "' . $p->nama_prestasi . '" telah disetujui dalam proses verifikasi massal.' .
+                         ($request->catatan_verifikasi ? ' Catatan: ' . $request->catatan_verifikasi : ''),
+                'type' => 'success',
+                'priority' => 'normal',
+                'data' => [
+                    'prestasi_id' => $p->id,
+                    'action_url' => route('siswa.prestasi.show', $p->id)
+                ],
+                'dibaca' => false,
+            ]);
+        }
+
+        return redirect()->route('admin.prestasi.index')
+            ->with('success', count($prestasi) . ' prestasi berhasil disetujui.');
+    }
+
+    /**
+     * Bulk reject prestasi
+     */
+    public function bulkReject(Request $request)
+    {
+        $request->validate([
+            'prestasi_ids' => 'required|array',
+            'prestasi_ids.*' => 'exists:prestasi,id',
+            'catatan_verifikasi' => 'required|string'
+        ]);
+
+        $prestasi = Prestasi::whereIn('id', $request->prestasi_ids)
+            ->where('status_verifikasi', 'pending')
+            ->get();
+
+        foreach ($prestasi as $p) {
+            $p->update([
+                'status_verifikasi' => 'rejected',
+                'catatan_verifikasi' => $request->catatan_verifikasi
+            ]);
+
+            // Kirim notifikasi ke siswa
+            Notifikasi::create([
+                'user_id' => $p->siswa->user_id,
+                'judul' => 'Prestasi Ditolak (Bulk)',
+                'pesan' => 'Prestasi "' . $p->nama_prestasi . '" telah ditolak dalam proses verifikasi massal. Catatan: ' . $request->catatan_verifikasi,
+                'type' => 'error',
+                'priority' => 'normal',
+                'data' => [
+                    'prestasi_id' => $p->id,
+                    'action_url' => route('siswa.prestasi.show', $p->id)
+                ],
+                'dibaca' => false,
+            ]);
+        }
+
+        return redirect()->route('admin.prestasi.index')
+            ->with('success', count($prestasi) . ' prestasi berhasil ditolak.');
     }
 }

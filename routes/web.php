@@ -67,6 +67,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Routes CRUD Prestasi
     Route::resource('/prestasi', AdminPrestasiController::class);
     Route::post('/prestasi/{id}/verify', [AdminPrestasiController::class, 'verify'])->name('prestasi.verify');
+    Route::post('/prestasi/bulk-approve', [AdminPrestasiController::class, 'bulkApprove'])->name('prestasi.bulk-approve');
+    Route::post('/prestasi/bulk-reject', [AdminPrestasiController::class, 'bulkReject'])->name('prestasi.bulk-reject');
 
     // Routes Notifikasi
     Route::get('/notifikasi', [AdminNotifikasiController::class, 'index'])->name('notifikasi.index');
