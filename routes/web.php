@@ -73,6 +73,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Routes Notifikasi
     Route::get('/notifikasi', [AdminNotifikasiController::class, 'index'])->name('notifikasi.index');
     Route::get('/notifikasi/create', [AdminNotifikasiController::class, 'create'])->name('notifikasi.create');
+    Route::get('/notifikasi/{id}', [AdminNotifikasiController::class, 'show'])->name('notifikasi.show');
     Route::post('/notifikasi', [AdminNotifikasiController::class, 'store'])->name('notifikasi.store');
     Route::delete('/notifikasi/{id}', [AdminNotifikasiController::class, 'destroy'])->name('notifikasi.destroy');
     Route::post('/notifikasi/send-to-all', [AdminNotifikasiController::class, 'sendToAll'])->name('notifikasi.send-to-all');
@@ -99,6 +100,10 @@ Route::middleware(['auth', 'role:siswa'])->prefix('siswa')->name('siswa.')->grou
     Route::post('/notifikasi/mark-all-as-read', [SiswaNotifikasiController::class, 'markAllAsRead'])->name('notifikasi.mark-all-as-read');
     Route::delete('/notifikasi/{id}', [SiswaNotifikasiController::class, 'destroy'])->name('notifikasi.destroy');
     Route::get('/notifikasi/count/unread', [SiswaNotifikasiController::class, 'count'])->name('notifikasi.count');
+
+    // Routes Kirim Pesan ke Admin
+    Route::get('/pesan/create', [SiswaNotifikasiController::class, 'create'])->name('pesan.create');
+    Route::post('/pesan', [SiswaNotifikasiController::class, 'store'])->name('pesan.store');
 
     // Routes Lomba (view only)
     Route::get('/lomba', [SiswaLombaController::class, 'index'])->name('lomba.index');

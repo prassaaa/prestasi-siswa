@@ -20,17 +20,17 @@
             <h3 class="text-md font-semibold mb-3">Kirim Notifikasi ke Semua Siswa</h3>
             <form action="{{ route('admin.notifikasi.send-to-all') }}" method="POST">
                 @csrf
-                
+
                 <div class="mb-4">
                     <label for="judul" class="block text-sm font-medium text-gray-700">Judul</label>
                     <input type="text" name="judul" id="judul" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
                 </div>
-                
+
                 <div class="mb-4">
                     <label for="pesan" class="block text-sm font-medium text-gray-700">Pesan</label>
                     <textarea name="pesan" id="pesan" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required></textarea>
                 </div>
-                
+
                 <div class="flex justify-end">
                     <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
                         Kirim ke Semua Siswa
@@ -72,7 +72,10 @@
                             {{ $item->user->name ?? 'Tidak ada user' }}
                         </td>
                         <td class="hidden md:table-cell px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {{ $item->judul }}
+                            <a href="{{ route('admin.notifikasi.show', $item->id) }}"
+                               class="text-blue-600 hover:text-blue-900 hover:underline">
+                                {{ $item->judul }}
+                            </a>
                         </td>
                         <td class="hidden md:table-cell px-4 py-4 whitespace-normal text-sm text-gray-500">
                             {{ \Illuminate\Support\Str::limit($item->pesan, 50) }}
@@ -103,9 +106,14 @@
                         <td class="md:hidden px-4 py-4 text-sm text-gray-900">
                             <div class="space-y-2">
                                 <p><strong>Untuk:</strong> {{ $item->user->name ?? 'Tidak ada user' }}</p>
-                                <p><strong>Judul:</strong> {{ $item->judul }}</p>
+                                <p><strong>Judul:</strong>
+                                    <a href="{{ route('admin.notifikasi.show', $item->id) }}"
+                                       class="text-blue-600 hover:text-blue-900 hover:underline">
+                                        {{ $item->judul }}
+                                    </a>
+                                </p>
                                 <p><strong>Pesan:</strong> {{ \Illuminate\Support\Str::limit($item->pesan, 50) }}</p>
-                                <p><strong>Status:</strong> 
+                                <p><strong>Status:</strong>
                                     @if ($item->dibaca)
                                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
                                             Dibaca

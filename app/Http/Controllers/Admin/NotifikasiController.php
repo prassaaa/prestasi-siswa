@@ -28,6 +28,21 @@ class NotifikasiController extends Controller
     }
 
     /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        $notifikasi = Notifikasi::with('user')->findOrFail($id);
+
+        // Tandai sebagai dibaca jika notifikasi untuk admin yang sedang login
+        if ($notifikasi->user_id == auth()->id() && !$notifikasi->dibaca) {
+            $notifikasi->markAsRead();
+        }
+
+        return view('admin.notifikasi.show', compact('notifikasi'));
+    }
+
+    /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
@@ -37,9 +52,9 @@ class NotifikasiController extends Controller
             'judul' => 'required|string|max:255',
             'pesan' => 'required|string',
         ]);
-        
+
         Notifikasi::create($request->all());
-        
+
         return redirect()->route('admin.notifikasi.index')
             ->with('success', 'Notifikasi berhasil dikirim.');
     }
@@ -51,7 +66,7 @@ class NotifikasiController extends Controller
     {
         $notifikasi = Notifikasi::findOrFail($id);
         $notifikasi->delete();
-        
+
         return redirect()->route('admin.notifikasi.index')
             ->with('success', 'Notifikasi berhasil dihapus.');
     }
@@ -65,9 +80,9 @@ class NotifikasiController extends Controller
             'judul' => 'required|string|max:255',
             'pesan' => 'required|string',
         ]);
-        
+
         $users = User::where('role_id', 2)->get(); // Hanya siswa
-        
+
         foreach ($users as $user) {
             Notifikasi::create([
                 'user_id' => $user->id,
@@ -76,7 +91,7 @@ class NotifikasiController extends Controller
                 'dibaca' => false,
             ]);
         }
-        
+
         return redirect()->route('admin.notifikasi.index')
             ->with('success', 'Notifikasi berhasil dikirim ke semua siswa.');
     }
