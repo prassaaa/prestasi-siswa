@@ -8,6 +8,8 @@
     <link rel="icon" type="image/x-icon" href="{{ asset('assets/logo.png') }}">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -29,6 +31,7 @@
             <div class="hidden md:flex space-x-4">
                 <a href="#lomba" class="hover:underline">Data Lomba</a>
                 <a href="#prestasi" class="hover:underline">Data Prestasi</a>
+                <a href="#grafik" class="hover:underline">Grafik Prestasi</a>
                 <a href="{{ route('login') }}" class="bg-white text-blue-600 px-4 py-1 rounded-md font-medium hover:bg-blue-50 transition">Login</a>
             </div>
             <!-- Mobile Menu Button -->
@@ -44,6 +47,7 @@
         <div id="mobile-menu" class="hidden md:hidden px-4 py-3 bg-blue-700">
             <a href="#lomba" class="block py-2 hover:bg-blue-800 px-2 rounded">Data Lomba</a>
             <a href="#prestasi" class="block py-2 hover:bg-blue-800 px-2 rounded">Data Prestasi</a>
+            <a href="#grafik" class="block py-2 hover:bg-blue-800 px-2 rounded">Grafik Prestasi</a>
             <a href="{{ route('login') }}" class="block py-2 bg-white text-blue-600 px-2 rounded mt-2 font-medium">Login</a>
         </div>
     </header>
@@ -145,15 +149,15 @@
                         <div class="p-5">
                             <div class="flex justify-between items-start">
                                 <h5 class="text-xl font-bold tracking-tight text-gray-900">{{ $item->nama_prestasi }}</h5>
-                                <span class="px-2.5 py-0.5 rounded text-xs font-semibold
-                                    @if($item->status_verifikasi == 'approved')
-                                        bg-green-100 text-green-800
-                                    @elseif($item->status_verifikasi == 'rejected')
-                                        bg-red-100 text-red-800
-                                    @else
-                                        bg-yellow-100 text-yellow-800
-                                    @endif
-                                ">
+                                @php
+                                    $statusClasses = [
+                                        'approved' => 'bg-green-100 text-green-800',
+                                        'rejected' => 'bg-red-100 text-red-800',
+                                        'pending' => 'bg-yellow-100 text-yellow-800'
+                                    ];
+                                    $statusClass = $statusClasses[$item->status_verifikasi] ?? $statusClasses['pending'];
+                                @endphp
+                                <span class="px-2.5 py-0.5 rounded text-xs font-semibold {{ $statusClass }}">
                                     @if($item->status_verifikasi == 'approved')
                                         Disetujui
                                     @elseif($item->status_verifikasi == 'rejected')
@@ -231,6 +235,47 @@
         </div>
     </section>
 
+    <!-- Grafik Prestasi -->
+    <section id="grafik" class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <h2 class="text-2xl font-bold mb-10 text-center">Grafik Prestasi Siswa</h2>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Grafik Prestasi per Jenis -->
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-lg font-semibold mb-4 text-center">Prestasi Berdasarkan Jenis</h3>
+                    <div class="relative h-64">
+                        <canvas id="prestasiJenisChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Grafik Prestasi per Tingkat -->
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-lg font-semibold mb-4 text-center">Prestasi Berdasarkan Tingkat</h3>
+                    <div class="relative h-64">
+                        <canvas id="prestasiTingkatChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Grafik Prestasi per Tahun -->
+                <div class="bg-white p-6 rounded-lg shadow-md lg:col-span-2">
+                    <h3 class="text-lg font-semibold mb-4 text-center">Tren Prestasi per Tahun</h3>
+                    <div class="relative h-64">
+                        <canvas id="prestasiTahunChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Grafik Prestasi per Jenjang -->
+                <div class="bg-white p-6 rounded-lg shadow-md lg:col-span-2">
+                    <h3 class="text-lg font-semibold mb-4 text-center">Prestasi Berdasarkan Jenjang Pendidikan</h3>
+                    <div class="relative h-64">
+                        <canvas id="prestasiJenjangChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Footer -->
     <footer class="bg-gray-800 text-white py-8">
         <div class="container mx-auto px-4">
@@ -247,6 +292,7 @@
                             <li><a href="#" class="text-gray-400 hover:text-white">Beranda</a></li>
                             <li><a href="#lomba" class="text-gray-400 hover:text-white">Data Lomba</a></li>
                             <li><a href="#prestasi" class="text-gray-400 hover:text-white">Data Prestasi</a></li>
+                            <li><a href="#grafik" class="text-gray-400 hover:text-white">Grafik Prestasi</a></li>
                             <li><a href="{{ route('login') }}" class="text-gray-400 hover:text-white">Login</a></li>
                         </ul>
                     </div>
@@ -280,8 +326,8 @@
     </footer>
 
     <!-- Modal for Lomba Detail -->
-    <div id="lomba-detail-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-        <div class="bg-white rounded-lg max-w-2xl w-full max-h-screen overflow-y-auto">
+    <div id="lomba-detail-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+            <div class="bg-white rounded-lg max-w-2xl w-full max-h-screen overflow-y-auto mx-auto mt-20">
             <div class="p-6">
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="text-xl font-bold" id="modal-title">Detail Lomba</h3>
@@ -299,8 +345,8 @@
     </div>
 
     <!-- Modal for Prestasi Detail -->
-    <div id="prestasi-detail-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-        <div class="bg-white rounded-lg max-w-2xl w-full max-h-screen overflow-y-auto">
+    <div id="prestasi-detail-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+        <div class="bg-white rounded-lg max-w-2xl w-full max-h-screen overflow-y-auto mx-auto mt-20">
             <div class="p-6">
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="text-xl font-bold" id="modal-title">Detail Prestasi</h3>
@@ -319,51 +365,59 @@
 
     <script>
         // Mobile menu toggle
-        document.getElementById('menu-toggle').addEventListener('click', function() {
-            const mobileMenu = document.getElementById('mobile-menu');
-            mobileMenu.classList.toggle('hidden');
-        });
+        const menuToggle = document.getElementById('menu-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        if (menuToggle && mobileMenu) {
+            menuToggle.addEventListener('click', function() {
+                mobileMenu.classList.toggle('hidden');
+            });
+        }
 
         // Lomba Detail Modal
         const lombaModal = document.getElementById('lomba-detail-modal');
         const closeLombaModal = document.getElementById('close-lomba-modal');
 
-        document.querySelectorAll('.detail-lomba-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const lombaId = this.dataset.id;
-                // Fetch lomba detail and populate modal
-                fetchLombaDetail(lombaId);
-                lombaModal.classList.remove('hidden');
+        if (lombaModal && closeLombaModal) {
+            document.querySelectorAll('.detail-lomba-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const lombaId = this.dataset.id;
+                    // Fetch lomba detail and populate modal
+                    fetchLombaDetail(lombaId);
+                    lombaModal.classList.remove('hidden');
+                });
             });
-        });
 
-        closeLombaModal.addEventListener('click', function() {
-            lombaModal.classList.add('hidden');
-        });
+            closeLombaModal.addEventListener('click', function() {
+                lombaModal.classList.add('hidden');
+            });
+        }
 
         // Prestasi Detail Modal
         const prestasiModal = document.getElementById('prestasi-detail-modal');
         const closePrestasiModal = document.getElementById('close-prestasi-modal');
 
-        document.querySelectorAll('.detail-prestasi-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const prestasiId = this.dataset.id;
-                // Fetch prestasi detail and populate modal
-                fetchPrestasiDetail(prestasiId);
-                prestasiModal.classList.remove('hidden');
+        if (prestasiModal && closePrestasiModal) {
+            document.querySelectorAll('.detail-prestasi-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const prestasiId = this.dataset.id;
+                    // Fetch prestasi detail and populate modal
+                    fetchPrestasiDetail(prestasiId);
+                    prestasiModal.classList.remove('hidden');
+                });
             });
-        });
 
-        closePrestasiModal.addEventListener('click', function() {
-            prestasiModal.classList.add('hidden');
-        });
+            closePrestasiModal.addEventListener('click', function() {
+                prestasiModal.classList.add('hidden');
+            });
+        }
 
         // Close modals when clicking outside
         window.addEventListener('click', function(event) {
-            if (event.target == lombaModal) {
+            if (lombaModal && event.target == lombaModal) {
                 lombaModal.classList.add('hidden');
             }
-            if (event.target == prestasiModal) {
+            if (prestasiModal && event.target == prestasiModal) {
                 prestasiModal.classList.add('hidden');
             }
         });
@@ -481,23 +535,266 @@ function fetchPrestasiDetail(id) {
             return date.toLocaleDateString('id-ID', options);
         }
 
-        // Search functionality
-        document.getElementById('search-button').addEventListener('click', function() {
-            const searchType = document.getElementById('search-type').value;
-            const searchQuery = document.getElementById('search-input').value;
+        // Search functionality (only if elements exist)
+        const searchButton = document.getElementById('search-button');
+        const searchInput = document.getElementById('search-input');
+        const searchType = document.getElementById('search-type');
 
-            if (searchQuery.trim() !== '') {
-                // Redirect to appropriate search page
-                window.location.href = `/${searchType}/search?query=${encodeURIComponent(searchQuery)}`;
-            }
+        if (searchButton && searchInput && searchType) {
+            searchButton.addEventListener('click', function() {
+                const searchTypeValue = searchType.value;
+                const searchQuery = searchInput.value;
+
+                if (searchQuery.trim() !== '') {
+                    // Redirect to appropriate search page
+                    window.location.href = `/${searchTypeValue}/search?query=${encodeURIComponent(searchQuery)}`;
+                }
+            });
+
+            // Enter key on search input
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchButton.click();
+                }
+            });
+        }
+
+        // Initialize Charts
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCharts();
         });
 
-        // Enter key on search input
-        document.getElementById('search-input').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                document.getElementById('search-button').click();
+        function initializeCharts() {
+            // Data untuk grafik (akan diambil dari controller)
+            const prestasiJenisData = @json($prestasiByJenis ?? []);
+            const prestasiTingkatData = @json($prestasiByTingkat ?? []);
+            const prestasiTahunData = @json($prestasiByTahun ?? []);
+            const prestasiJenjangData = @json($prestasiByJenjang ?? []);
+
+            // Chart 1: Prestasi per Jenis (Pie Chart)
+            const jenisCanvas = document.getElementById('prestasiJenisChart');
+            if (jenisCanvas) {
+                const jenisCtx = jenisCanvas.getContext('2d');
+            new Chart(jenisCtx, {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(prestasiJenisData),
+                    datasets: [{
+                        data: Object.values(prestasiJenisData),
+                        backgroundColor: [
+                            '#3B82F6', // Blue
+                            '#10B981', // Green
+                            '#F59E0B', // Yellow
+                            '#EF4444', // Red
+                            '#8B5CF6', // Purple
+                            '#F97316'  // Orange
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                    return context.label + ': ' + context.parsed + ' (' + percentage + '%)';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
             }
-        });
+
+            // Chart 2: Prestasi per Tingkat (Doughnut Chart)
+            const tingkatCanvas = document.getElementById('prestasiTingkatChart');
+            if (tingkatCanvas) {
+                const tingkatCtx = tingkatCanvas.getContext('2d');
+            new Chart(tingkatCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: prestasiTingkatData.map(item => item.tingkat),
+                    datasets: [{
+                        data: prestasiTingkatData.map(item => item.total),
+                        backgroundColor: [
+                            '#DC2626', // Red for Nasional
+                            '#F59E0B', // Yellow for Provinsi
+                            '#3B82F6', // Blue for Kota/Kabupaten
+                            '#10B981', // Green for Sekolah
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                    return context.label + ': ' + context.parsed + ' (' + percentage + '%)';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            }
+
+            // Chart 3: Prestasi per Tahun (Line Chart)
+            const tahunCanvas = document.getElementById('prestasiTahunChart');
+            if (tahunCanvas) {
+                const tahunCtx = tahunCanvas.getContext('2d');
+            new Chart(tahunCtx, {
+                type: 'line',
+                data: {
+                    labels: prestasiTahunData.map(item => item.tahun),
+                    datasets: [{
+                        label: 'Jumlah Prestasi',
+                        data: prestasiTahunData.map(item => item.total),
+                        borderColor: '#3B82F6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#3B82F6',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Tahun'
+                            },
+                            grid: {
+                                display: false
+                            }
+                        },
+                        y: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Jumlah Prestasi'
+                            },
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            }
+                        }
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
+                    }
+                }
+            });
+            }
+
+            // Chart 4: Prestasi per Jenjang (Bar Chart)
+            const jenjangCanvas = document.getElementById('prestasiJenjangChart');
+            if (jenjangCanvas) {
+                const jenjangCtx = jenjangCanvas.getContext('2d');
+            new Chart(jenjangCtx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(prestasiJenjangData),
+                    datasets: [{
+                        label: 'Jumlah Prestasi',
+                        data: Object.values(prestasiJenjangData),
+                        backgroundColor: [
+                            '#3B82F6', // Blue
+                            '#10B981', // Green
+                            '#F59E0B', // Yellow
+                            '#EF4444'  // Red
+                        ],
+                        borderColor: [
+                            '#2563EB',
+                            '#059669',
+                            '#D97706',
+                            '#DC2626'
+                        ],
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Jenjang Pendidikan'
+                            },
+                            grid: {
+                                display: false
+                            }
+                        },
+                        y: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Jumlah Prestasi'
+                            },
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            }
+                        }
+                    }
+                }
+            });
+            }
+        }
     </script>
 </body>
 </html>
