@@ -156,28 +156,53 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @forelse ($lomba as $item)
-                <div class="bg-white rounded-lg border border-gray-200 shadow-md overflow-hidden">
+                @php
+                    $isFinished = $item->tanggal_selesai && $item->tanggal_selesai < now()->format('Y-m-d');
+                    $cardClass = $isFinished ? 'bg-gray-50 border-gray-300 opacity-75' : 'bg-white border-gray-200';
+                @endphp
+                <div class="rounded-lg border shadow-md overflow-hidden {{ $cardClass }}">
                     <div class="p-5">
                         <div class="flex justify-between items-start">
                             <h5 class="text-xl font-bold tracking-tight text-gray-900">{{ $item->nama_lomba }}</h5>
-                            @php
-                                $tingkatClasses = [
-                                    'Nasional' => 'bg-red-100 text-red-800',
-                                    'Provinsi' => 'bg-yellow-100 text-yellow-800',
-                                    'Kota/Kabupaten' => 'bg-green-100 text-green-800',
-                                    'Sekolah' => 'bg-blue-100 text-blue-800'
-                                ];
-                                $tingkatClass = $tingkatClasses[$item->tingkat] ?? 'bg-gray-100 text-gray-800';
-                            @endphp
-                            <span class="px-2.5 py-0.5 rounded text-xs font-semibold {{ $tingkatClass }}">
-                                {{ $item->tingkat }}
-                            </span>
+                            <div class="flex flex-col space-y-1">
+                                @php
+                                    $tingkatClasses = [
+                                        'Nasional' => 'bg-red-100 text-red-800',
+                                        'Provinsi' => 'bg-yellow-100 text-yellow-800',
+                                        'Kota/Kabupaten' => 'bg-green-100 text-green-800',
+                                        'Sekolah' => 'bg-blue-100 text-blue-800'
+                                    ];
+                                    $tingkatClass = $tingkatClasses[$item->tingkat] ?? 'bg-gray-100 text-gray-800';
+
+                                    // Check if lomba is finished
+                                    $isFinished = $item->tanggal_selesai && $item->tanggal_selesai < now()->format('Y-m-d');
+                                @endphp
+                                <span class="px-2.5 py-0.5 rounded text-xs font-semibold {{ $tingkatClass }}">
+                                    {{ $item->tingkat }}
+                                </span>
+
+                                @if($isFinished)
+                                    <span class="px-2.5 py-0.5 rounded text-xs font-semibold bg-gray-100 text-gray-700 border border-gray-300">
+                                        <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        Selesai
+                                    </span>
+                                @else
+                                    <span class="px-2.5 py-0.5 rounded text-xs font-semibold bg-green-100 text-green-700 border border-green-300">
+                                        <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        Aktif
+                                    </span>
+                                @endif
+                            </div>
                         </div>
                         <p class="text-sm text-gray-500 mt-1">{{ $item->jenis_lomba }} | {{ $item->tahun }}</p>
 
                         <div class="mt-3 space-y-1">
                             @if ($item->tanggal_mulai)
-                                <p class="text-sm">
+                                <p class="text-sm {{ $isFinished ? 'text-gray-500' : 'text-gray-700' }}">
                                     <span class="font-medium">Tanggal:</span>
                                     @if (is_string($item->tanggal_mulai))
                                         {{ $item->tanggal_mulai }}
@@ -193,30 +218,55 @@
                                             {{ $item->tanggal_selesai->format('d M Y') }}
                                         @endif
                                     @endif
+
+                                    @if($isFinished)
+                                        <span class="ml-2 text-xs text-red-600 font-medium">
+                                            (Sudah berakhir)
+                                        </span>
+                                    @elseif($item->tanggal_selesai && $item->tanggal_selesai >= now()->format('Y-m-d'))
+                                        @php
+                                            $daysLeft = \Carbon\Carbon::parse($item->tanggal_selesai)->diffInDays(now());
+                                        @endphp
+                                        @if($daysLeft <= 7)
+                                            <span class="ml-2 text-xs text-orange-600 font-medium">
+                                                ({{ $daysLeft }} hari lagi)
+                                            </span>
+                                        @endif
+                                    @endif
                                 </p>
                             @endif
 
                             @if ($item->lokasi)
-                                <p class="text-sm">
+                                <p class="text-sm {{ $isFinished ? 'text-gray-500' : 'text-gray-700' }}">
                                     <span class="font-medium">Lokasi:</span> {{ $item->lokasi }}
                                 </p>
                             @endif
                         </div>
 
                         <div class="mt-3">
-                            <p class="text-sm text-gray-600">
+                            <p class="text-sm {{ $isFinished ? 'text-gray-500' : 'text-gray-600' }}">
                                 {{ \Illuminate\Support\Str::limit($item->deskripsi, 100) }}
                             </p>
                         </div>
 
                         <div class="mt-4">
-                            <a href="{{ route('siswa.lomba.show', $item->id) }}"
-                               class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300">
-                                Detail Lomba
-                                <svg class="w-3.5 h-3.5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                                </svg>
-                            </a>
+                            @if($isFinished)
+                                <div class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-gray-500 bg-gray-100 rounded-lg cursor-not-allowed opacity-60"
+                                     title="Lomba ini sudah berakhir dan tidak dapat diikuti lagi">
+                                    <svg class="w-3.5 h-3.5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728"></path>
+                                    </svg>
+                                    Lomba Selesai
+                                </div>
+                            @else
+                                <a href="{{ route('siswa.lomba.show', $item->id) }}"
+                                   class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300">
+                                    Detail Lomba
+                                    <svg class="w-3.5 h-3.5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                </a>
+                            @endif
                         </div>
                     </div>
                 </div>
