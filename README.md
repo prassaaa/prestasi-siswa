@@ -1,66 +1,243 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🏆 Sistem Manajemen Prestasi Siswa
 
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <img src="https://img.shields.io/badge/Laravel-10.x-red?style=for-the-badge&logo=laravel" alt="Laravel">
+  <img src="https://img.shields.io/badge/PHP-8.1+-blue?style=for-the-badge&logo=php" alt="PHP">
+  <img src="https://img.shields.io/badge/MySQL-8.0+-orange?style=for-the-badge&logo=mysql" alt="MySQL">
+  <img src="https://img.shields.io/badge/TailwindCSS-3.x-cyan?style=for-the-badge&logo=tailwindcss" alt="TailwindCSS">
+  <img src="https://img.shields.io/badge/Alpine.js-3.x-green?style=for-the-badge&logo=alpine.js" alt="Alpine.js">
 </p>
 
-## About Laravel
+<p align="center">
+  <strong>Aplikasi web untuk mengelola dan memverifikasi prestasi siswa secara digital</strong>
+</p>
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 📋 Deskripsi
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Sistem Manajemen Prestasi Siswa adalah aplikasi web yang dirancang untuk membantu sekolah dan institusi pendidikan dalam mengelola, memverifikasi, dan melacak prestasi siswa secara digital. Aplikasi ini menyediakan platform yang memungkinkan siswa untuk mendaftarkan prestasi mereka, admin untuk memverifikasi prestasi, dan masyarakat umum untuk melihat prestasi yang telah diverifikasi.
 
-## Learning Laravel
+## ✨ Fitur Utama
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### 👨‍🎓 Untuk Siswa
+- **Registrasi Prestasi**: Mendaftarkan prestasi dengan upload bukti dokumen
+- **Dashboard Personal**: Melihat statistik prestasi pribadi
+- **Manajemen Profil**: Mengelola data pribadi dan sekolah
+- **Riwayat Prestasi**: Melihat semua prestasi yang pernah didaftarkan
+- **Status Verifikasi**: Memantau status verifikasi prestasi
+- **Cetak Sertifikat**: Mencetak prestasi yang telah diverifikasi dalam format PDF
+- **Notifikasi**: Menerima pemberitahuan terkait status prestasi
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### 👨‍💼 Untuk Admin
+- **Dashboard Admin**: Overview statistik sistem secara keseluruhan
+- **Manajemen Siswa**: CRUD data siswa dan sekolah
+- **Manajemen Lomba**: CRUD data lomba dan kompetisi
+- **Verifikasi Prestasi**: Menyetujui atau menolak prestasi dengan catatan
+- **Manajemen Notifikasi**: Mengirim notifikasi ke siswa
+- **Export Data**: Export data lomba ke PDF
+- **Filter & Pencarian**: Filter prestasi berdasarkan status, tingkat, dan jenjang
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 🌐 Untuk Publik
+- **Landing Page**: Informasi umum dan statistik prestasi
+- **Galeri Prestasi**: Melihat prestasi yang telah diverifikasi
+- **Informasi Lomba**: Daftar lomba yang tersedia
+- **Pencarian**: Mencari prestasi dan lomba tertentu
 
-## Laravel Sponsors
+## 🛠️ Teknologi yang Digunakan
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Backend
+- **Laravel 10.x** - PHP Framework
+- **PHP 8.1+** - Programming Language
+- **MySQL** - Database
+- **Laravel Breeze** - Authentication
+- **Laravel Sanctum** - API Authentication
+- **DomPDF** - PDF Generation
 
-### Premium Partners
+### Frontend
+- **Blade Templates** - Templating Engine
+- **TailwindCSS 3.x** - CSS Framework
+- **Alpine.js 3.x** - JavaScript Framework
+- **Vite** - Build Tool
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+### Development Tools
+- **Composer** - PHP Dependency Manager
+- **NPM** - Node Package Manager
+- **Laravel Tinker** - REPL
+- **PHPUnit** - Testing Framework
 
-## Contributing
+## 📊 Struktur Database
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Tabel Utama
+- **users** - Data pengguna (admin/siswa)
+- **roles** - Role pengguna
+- **siswa** - Data detail siswa
+- **sekolah** - Data sekolah
+- **lomba** - Data lomba/kompetisi
+- **prestasi** - Data prestasi siswa
+- **notifikasi** - Sistem notifikasi
 
-## Code of Conduct
+### Relasi Database
+- User → Siswa (One to One)
+- Siswa → Sekolah (Many to One)
+- Siswa → Prestasi (One to Many)
+- Lomba → Prestasi (One to Many)
+- User → Notifikasi (One to Many)
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## 🚀 Instalasi
 
-## Security Vulnerabilities
+### Prasyarat
+- PHP 8.1 atau lebih tinggi
+- Composer
+- Node.js & NPM
+- MySQL 8.0+
+- Web Server (Apache/Nginx)
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Langkah Instalasi
 
-## License
+1. **Clone Repository**
+   ```bash
+   git clone <repository-url>
+   cd prestasi-siswa
+   ```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+2. **Install Dependencies**
+   ```bash
+   # Install PHP dependencies
+   composer install
+
+   # Install Node dependencies
+   npm install
+   ```
+
+3. **Environment Setup**
+   ```bash
+   # Copy environment file
+   cp .env.example .env
+
+   # Generate application key
+   php artisan key:generate
+   ```
+
+4. **Database Configuration**
+
+   Edit file `.env` dan sesuaikan konfigurasi database:
+   ```env
+   DB_CONNECTION=mysql
+   DB_HOST=127.0.0.1
+   DB_PORT=3306
+   DB_DATABASE=prestasi_siswa
+   DB_USERNAME=root
+   DB_PASSWORD=your_password
+   ```
+
+5. **Database Migration & Seeding**
+   ```bash
+   # Create database
+   php artisan migrate
+
+   # Seed initial data (optional)
+   php artisan db:seed
+   ```
+
+6. **Storage Link**
+   ```bash
+   php artisan storage:link
+   ```
+
+7. **Build Assets**
+   ```bash
+   # Development
+   npm run dev
+
+   # Production
+   npm run build
+   ```
+
+8. **Start Development Server**
+   ```bash
+   php artisan serve
+   ```
+
+   Aplikasi akan berjalan di `http://localhost:8000`
+
+## 🔧 Konfigurasi
+
+### File Upload
+Pastikan direktori `storage/app/public` memiliki permission yang tepat untuk upload file bukti prestasi.
+
+### Email Configuration
+Untuk fitur notifikasi email, konfigurasi SMTP di file `.env`:
+```env
+MAIL_MAILER=smtp
+MAIL_HOST=your-smtp-host
+MAIL_PORT=587
+MAIL_USERNAME=your-email
+MAIL_PASSWORD=your-password
+MAIL_ENCRYPTION=tls
+```
+
+## 📱 Penggunaan
+
+### Akses Admin
+1. Buat akun admin melalui seeder atau registrasi manual
+2. Login dengan role admin
+3. Akses dashboard admin di `/admin/dashboard`
+
+### Akses Siswa
+1. Registrasi sebagai siswa di `/register-siswa`
+2. Login dengan akun siswa
+3. Akses dashboard siswa di `/siswa/dashboard`
+
+### Workflow Prestasi
+1. **Siswa** mendaftarkan prestasi dengan upload bukti
+2. **Admin** memverifikasi prestasi (approve/reject)
+3. **Siswa** menerima notifikasi hasil verifikasi
+4. **Prestasi yang disetujui** tampil di halaman publik
+
+## 🧪 Testing
+
+```bash
+# Run all tests
+php artisan test
+
+# Run specific test
+php artisan test --filter=PrestasiTest
+
+# Run with coverage
+php artisan test --coverage
+```
+
+## 📝 API Documentation
+
+### Authentication
+- `POST /login` - Login user
+- `POST /logout` - Logout user
+- `POST /register-siswa` - Register siswa
+
+### Prestasi Endpoints
+- `GET /api/prestasi/{id}` - Get prestasi detail
+- `GET /api/lomba/{id}` - Get lomba detail
+
+## 🤝 Contributing
+
+1. Fork repository ini
+2. Buat branch fitur (`git checkout -b feature/AmazingFeature`)
+3. Commit perubahan (`git commit -m 'Add some AmazingFeature'`)
+4. Push ke branch (`git push origin feature/AmazingFeature`)
+5. Buat Pull Request
+
+### Coding Standards
+- Ikuti PSR-12 coding standard
+- Gunakan meaningful variable names
+- Tambahkan komentar untuk logic yang kompleks
+- Write tests untuk fitur baru
+
+## 📄 License
+
+Proyek ini dilisensikan di bawah [MIT License](LICENSE).
+---
+
+<p align="center">
+  <strong>Dibuat dengan ❤️ untuk kemajuan pendidikan Indonesia</strong>
+</p>
