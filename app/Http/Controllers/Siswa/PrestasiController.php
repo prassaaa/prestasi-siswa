@@ -96,10 +96,10 @@ class PrestasiController extends Controller
             ->where('id', $id)
             ->firstOrFail();
 
-        // Jika prestasi sudah diverifikasi, tidak bisa diedit
-        if ($prestasi->status_verifikasi != 'pending') {
+        // Hanya prestasi yang disetujui yang tidak bisa diedit
+        if ($prestasi->status_verifikasi == 'approved') {
             return redirect()->route('siswa.prestasi.index')
-                ->with('error', 'Prestasi yang sudah diverifikasi tidak dapat diedit.');
+                ->with('error', 'Prestasi yang sudah disetujui tidak dapat diedit.');
         }
 
         $lomba = Lomba::all();
@@ -114,10 +114,10 @@ class PrestasiController extends Controller
             ->where('id', $id)
             ->firstOrFail();
 
-        // Jika prestasi sudah diverifikasi, tidak bisa diedit
-        if ($prestasi->status_verifikasi != 'pending') {
+        // Hanya prestasi yang disetujui yang tidak bisa diedit
+        if ($prestasi->status_verifikasi == 'approved') {
             return redirect()->route('siswa.prestasi.index')
-                ->with('error', 'Prestasi yang sudah diverifikasi tidak dapat diedit.');
+                ->with('error', 'Prestasi yang sudah disetujui tidak dapat diedit.');
         }
 
         $request->validate([
@@ -148,14 +148,21 @@ class PrestasiController extends Controller
             $data['bukti'] = $buktiPath;
         }
 
+        // Simpan status lama untuk pesan
+        $wasRejected = $prestasi->status_verifikasi == 'rejected';
+
         // Reset status verifikasi ke pending
         $data['status_verifikasi'] = 'pending';
         $data['catatan_verifikasi'] = null;
 
         $prestasi->update($data);
 
+        $message = $wasRejected
+            ? 'Prestasi berhasil diperbaiki dan menunggu verifikasi ulang. Terima kasih telah memperbaiki sesuai catatan admin.'
+            : 'Data prestasi berhasil diperbarui dan menunggu verifikasi ulang.';
+
         return redirect()->route('siswa.prestasi.index')
-            ->with('success', 'Data prestasi berhasil diperbarui dan menunggu verifikasi ulang.');
+            ->with('success', $message);
     }
 
     public function destroy(string $id)
