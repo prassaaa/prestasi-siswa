@@ -112,7 +112,7 @@
                             <span class="text-xs">Sekolah</span>
                         </div>
                         <div class="flex items-center">
-                            <div class="w-4 h-4 mr-1 bg-teal-500 rounded"></div>
+                            <div class="w-4 h-4 mr-1 bg-red-600 rounded"></div>
                             <span class="text-xs">Kecamatan</span>
                         </div>
                         <div class="flex items-center">
@@ -259,7 +259,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         @if($item->tingkat == 'Sekolah')
                             'rgba(54, 162, 235, 0.8)', // Biru untuk tingkat Sekolah
                         @elseif($item->tingkat == 'Kecamatan')
-                            'rgba(75, 192, 192, 0.8)', // Hijau tosca untuk tingkat Kecamatan
+                            'rgba(220, 38, 38, 0.8)', // Merah untuk tingkat Kecamatan
                         @elseif($item->tingkat == 'Kabupaten/Kota')
                             'rgba(255, 159, 64, 0.8)', // Oranye untuk tingkat Kabupaten/Kota
                         @elseif($item->tingkat == 'Provinsi')
@@ -278,7 +278,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         @if($item->tingkat == 'Sekolah')
                             'rgba(54, 162, 235, 1)',
                         @elseif($item->tingkat == 'Kecamatan')
-                            'rgba(75, 192, 192, 1)',
+                            'rgba(220, 38, 38, 1)',
                         @elseif($item->tingkat == 'Kabupaten/Kota')
                             'rgba(255, 159, 64, 1)',
                         @elseif($item->tingkat == 'Provinsi')
