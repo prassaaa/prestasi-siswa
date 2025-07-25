@@ -14,7 +14,11 @@ class NotifikasiController extends Controller
      */
     public function index()
     {
-        $notifikasi = Notifikasi::orderBy('created_at', 'desc')->paginate(10);
+        // Tampilkan notifikasi yang ditujukan untuk admin yang sedang login
+        $notifikasi = Notifikasi::where('user_id', auth()->id())
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+
         return view('admin.notifikasi.index', compact('notifikasi'));
     }
 
@@ -32,7 +36,10 @@ class NotifikasiController extends Controller
      */
     public function show(string $id)
     {
-        $notifikasi = Notifikasi::with('user')->findOrFail($id);
+        // Hanya tampilkan notifikasi yang ditujukan untuk admin yang sedang login
+        $notifikasi = Notifikasi::with('user')
+            ->where('user_id', auth()->id())
+            ->findOrFail($id);
 
         // Tandai sebagai dibaca jika notifikasi untuk admin yang sedang login
         if ($notifikasi->user_id == auth()->id() && !$notifikasi->dibaca) {

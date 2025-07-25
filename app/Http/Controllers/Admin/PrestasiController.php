@@ -178,6 +178,7 @@ class PrestasiController extends Controller
             $notificationType = $request->status_verifikasi == 'approved' ? 'success' :
                                ($request->status_verifikasi == 'rejected' ? 'error' : 'info');
 
+            // Notifikasi untuk siswa
             Notifikasi::create([
                 'user_id' => $prestasi->siswa->user_id,
                 'judul' => 'Status Prestasi Diperbarui',
@@ -188,6 +189,22 @@ class PrestasiController extends Controller
                     'prestasi_id' => $prestasi->id,
                     'status' => $request->status_verifikasi,
                     'action_url' => route('siswa.prestasi.show', $prestasi->id)
+                ],
+                'dibaca' => false,
+            ]);
+
+            // Notifikasi untuk admin yang melakukan update
+            Notifikasi::create([
+                'user_id' => auth()->id(),
+                'judul' => 'Update Prestasi Berhasil',
+                'pesan' => 'Anda telah memperbarui status prestasi "' . $prestasi->nama_prestasi . '" milik ' . $prestasi->siswa->nama . ' menjadi ' . $statusText[$request->status_verifikasi] . '.',
+                'type' => 'info',
+                'priority' => 'normal',
+                'data' => [
+                    'prestasi_id' => $prestasi->id,
+                    'status' => $request->status_verifikasi,
+                    'siswa_name' => $prestasi->siswa->nama,
+                    'action_url' => route('admin.prestasi.show', $prestasi->id)
                 ],
                 'dibaca' => false,
             ]);
@@ -254,6 +271,23 @@ class PrestasiController extends Controller
             'dibaca' => false,
         ]);
 
+        // Kirim notifikasi ke admin yang melakukan verifikasi
+        Notifikasi::create([
+            'user_id' => auth()->id(),
+            'judul' => 'Verifikasi Prestasi Berhasil',
+            'pesan' => 'Anda telah ' . $statusText . ' prestasi "' . $prestasi->nama_prestasi . '" milik ' . $prestasi->siswa->nama .
+                     ($request->catatan_verifikasi ? '. Catatan: ' . $request->catatan_verifikasi : '.'),
+            'type' => 'info',
+            'priority' => 'normal',
+            'data' => [
+                'prestasi_id' => $prestasi->id,
+                'status' => $request->status_verifikasi,
+                'siswa_name' => $prestasi->siswa->nama,
+                'action_url' => route('admin.prestasi.show', $prestasi->id)
+            ],
+            'dibaca' => false,
+        ]);
+
         return redirect()->route('admin.prestasi.index')
             ->with('success', 'Prestasi berhasil ' . $statusText . '.');
     }
@@ -295,6 +329,21 @@ class PrestasiController extends Controller
             ]);
         }
 
+        // Kirim notifikasi ke admin yang melakukan bulk approve
+        Notifikasi::create([
+            'user_id' => auth()->id(),
+            'judul' => 'Bulk Approve Prestasi Berhasil',
+            'pesan' => 'Anda telah menyetujui ' . count($prestasi) . ' prestasi secara massal.' .
+                     ($request->catatan_verifikasi ? ' Catatan: ' . $request->catatan_verifikasi : ''),
+            'type' => 'success',
+            'priority' => 'normal',
+            'data' => [
+                'approved_count' => count($prestasi),
+                'action_url' => route('admin.prestasi.index', ['status' => 'approved'])
+            ],
+            'dibaca' => false,
+        ]);
+
         return redirect()->route('admin.prestasi.index')
             ->with('success', count($prestasi) . ' prestasi berhasil disetujui.');
     }
@@ -334,6 +383,20 @@ class PrestasiController extends Controller
                 'dibaca' => false,
             ]);
         }
+
+        // Kirim notifikasi ke admin yang melakukan bulk reject
+        Notifikasi::create([
+            'user_id' => auth()->id(),
+            'judul' => 'Bulk Reject Prestasi Berhasil',
+            'pesan' => 'Anda telah menolak ' . count($prestasi) . ' prestasi secara massal. Catatan: ' . $request->catatan_verifikasi,
+            'type' => 'warning',
+            'priority' => 'normal',
+            'data' => [
+                'rejected_count' => count($prestasi),
+                'action_url' => route('admin.prestasi.index', ['status' => 'rejected'])
+            ],
+            'dibaca' => false,
+        ]);
 
         return redirect()->route('admin.prestasi.index')
             ->with('success', count($prestasi) . ' prestasi berhasil ditolak.');
