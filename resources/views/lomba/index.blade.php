@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Informasi Lomba - Sistem Manajemen Prestasi Siswa</title>
     <meta name="description" content="Daftar lengkap lomba siswa">
+    <link rel="icon" type="image/x-icon" href="{{ asset('assets/logo.png') }}">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font -->
@@ -258,7 +259,7 @@
     </footer>
 
     <!-- Modal for Lomba Detail -->
-    <div id="lomba-detail-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden p-4">
+    <div id="lomba-detail-modal" class="fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50 hidden p-4">
         <div class="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div class="p-6">
                 <div class="flex justify-between items-center mb-4">

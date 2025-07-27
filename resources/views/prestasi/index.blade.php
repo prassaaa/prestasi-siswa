@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daftar Prestasi - Sistem Manajemen Prestasi Siswa</title>
     <meta name="description" content="Daftar lengkap prestasi siswa">
+    <link rel="icon" type="image/x-icon" href="{{ asset('assets/logo.png') }}">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font -->
@@ -59,7 +60,7 @@
             <form action="{{ route('prestasi.search') }}" method="GET">
                 <div class="flex flex-col md:flex-row gap-4">
                     <div class="flex-grow">
-                        <input type="text" name="query" placeholder="Cari prestasi..." 
+                        <input type="text" name="query" placeholder="Cari prestasi..."
                                class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 px-4 py-2"
                                value="{{ request()->query('query') }}">
                     </div>
@@ -87,15 +88,15 @@
                     <div class="p-5">
                         <div class="flex justify-between items-start">
                             <h5 class="text-xl font-bold tracking-tight text-gray-900">{{ $item->nama_prestasi }}</h5>
-                            <span class="px-2.5 py-0.5 rounded text-xs font-semibold 
-                                @if($item->status_verifikasi == 'approved')
-                                    bg-green-100 text-green-800
-                                @elseif($item->status_verifikasi == 'rejected')
-                                    bg-red-100 text-red-800
-                                @else
-                                    bg-yellow-100 text-yellow-800
-                                @endif
-                            ">
+                            @php
+                                $statusClasses = [
+                                    'approved' => 'bg-green-100 text-green-800',
+                                    'rejected' => 'bg-red-100 text-red-800',
+                                    'pending' => 'bg-yellow-100 text-yellow-800'
+                                ];
+                                $statusClass = $statusClasses[$item->status_verifikasi] ?? 'bg-yellow-100 text-yellow-800';
+                            @endphp
+                            <span class="px-2.5 py-0.5 rounded text-xs font-semibold {{ $statusClass }}">
                                 @if($item->status_verifikasi == 'approved')
                                     Disetujui
                                 @elseif($item->status_verifikasi == 'rejected')
@@ -106,7 +107,7 @@
                             </span>
                         </div>
                         <p class="text-sm text-gray-500 mt-1">{{ $item->siswa->nama ?? 'Tidak ada siswa' }} | {{ $item->siswa->sekolah->nama_sekolah ?? 'Tidak ada sekolah' }}</p>
-                        
+
                         <div class="mt-3 space-y-1">
                             <p class="text-sm">
                                 <span class="font-medium">Jenis:</span> {{ $item->jenis_prestasi }}
@@ -123,7 +124,7 @@
                                 </p>
                             @endif
                         </div>
-                        
+
                         <div class="mt-4">
                             <button class="detail-prestasi-btn inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300" data-id="{{ $item->id }}">
                                 Detail Prestasi
@@ -158,7 +159,7 @@
                     <h3 class="text-xl font-bold mb-4">Sistem Manajemen Prestasi Siswa</h3>
                     <p class="text-gray-400 max-w-md">Platform untuk mengelola dan mempublikasikan prestasi dan lomba siswa dengan mudah dan efisien.</p>
                 </div>
-                
+
                 <div class="grid grid-cols-2 gap-8">
                     <div>
                         <h4 class="text-lg font-semibold mb-3">Tautan</h4>
@@ -169,7 +170,7 @@
                             <li><a href="{{ route('login') }}" class="text-gray-400 hover:text-white">Login</a></li>
                         </ul>
                     </div>
-                    
+
                     <div>
                         <h4 class="text-lg font-semibold mb-3">Kontak</h4>
                         <ul class="space-y-2">
@@ -189,9 +190,9 @@
                     </div>
                 </div>
             </div>
-            
+
             <hr class="border-gray-700 my-6">
-            
+
             <div class="text-center text-gray-400">
                 <p>&copy; {{ date('Y') }} Sistem Manajemen Prestasi Siswa. All rights reserved.</p>
             </div>
@@ -199,8 +200,8 @@
     </footer>
 
     <!-- Modal for Prestasi Detail -->
-    <div id="prestasi-detail-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-        <div class="bg-white rounded-lg max-w-2xl w-full max-h-screen overflow-y-auto">
+    <div id="prestasi-detail-modal" class="fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50 hidden p-4">
+        <div class="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div class="p-6">
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="text-xl font-bold" id="modal-title">Detail Prestasi</h3>
@@ -227,24 +228,27 @@
         // Prestasi Detail Modal
         const prestasiModal = document.getElementById('prestasi-detail-modal');
         const closePrestasiModal = document.getElementById('close-prestasi-modal');
-        
+
         document.querySelectorAll('.detail-prestasi-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 const prestasiId = this.dataset.id;
                 // Fetch prestasi detail and populate modal
                 fetchPrestasiDetail(prestasiId);
                 prestasiModal.classList.remove('hidden');
+                prestasiModal.classList.add('flex');
             });
         });
-        
+
         closePrestasiModal.addEventListener('click', function() {
             prestasiModal.classList.add('hidden');
+            prestasiModal.classList.remove('flex');
         });
 
         // Close modals when clicking outside
         window.addEventListener('click', function(event) {
             if (event.target == prestasiModal) {
                 prestasiModal.classList.add('hidden');
+                prestasiModal.classList.remove('flex');
             }
         });
 
@@ -256,7 +260,7 @@
                     const prestasi = data;
                     let statusClass = '';
                     let statusText = '';
-                    
+
                     if (prestasi.status_verifikasi === 'approved') {
                         statusClass = 'text-green-600';
                         statusText = 'Disetujui';
@@ -267,13 +271,13 @@
                         statusClass = 'text-yellow-600';
                         statusText = 'Pending';
                     }
-                    
+
                     let content = `
                         <div class="bg-green-50 p-4 rounded-lg mb-4">
                             <h4 class="text-xl font-bold text-green-800">${prestasi.nama_prestasi}</h4>
                             <p class="text-sm text-green-600 mt-1">${prestasi.siswa ? prestasi.siswa.nama : 'Tidak ada siswa'} | ${prestasi.siswa && prestasi.siswa.sekolah ? prestasi.siswa.sekolah.nama_sekolah : 'Tidak ada sekolah'}</p>
                         </div>
-                        
+
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                             <div>
                                 <h5 class="font-semibold mb-2">Informasi Prestasi</h5>
@@ -282,7 +286,7 @@
                                 <p class="text-sm mb-1"><span class="font-medium">Tahun:</span> ${prestasi.tahun}</p>
                                 <p class="text-sm mb-1"><span class="font-medium">Status:</span> <span class="${statusClass}">${statusText}</span></p>
                             </div>`;
-                    
+
                     if (prestasi.lomba) {
                         content += `
                             <div>
@@ -292,18 +296,18 @@
                                 <p class="text-sm mb-1"><span class="font-medium">Tahun:</span> ${prestasi.lomba.tahun}</p>
                             </div>`;
                     }
-                    
+
                     content += `</div>`;
-                    
+
                     if (prestasi.bukti) {
                         const fileExtension = prestasi.bukti.split('.').pop().toLowerCase();
                         const isImage = ['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension);
-                        
+
                         content += `
                             <div class="mb-4">
                                 <h5 class="font-semibold mb-2">Bukti Prestasi</h5>
                                 <div class="border rounded-lg overflow-hidden">`;
-                        
+
                         if (isImage) {
                             content += `<img src="/storage/${prestasi.bukti}" alt="Bukti Prestasi" class="w-full">`;
                         } else {
@@ -315,10 +319,10 @@
                                     <a href="/storage/${prestasi.bukti}" target="_blank" class="text-blue-600 hover:underline">Lihat Dokumen Bukti</a>
                                 </div>`;
                         }
-                        
+
                         content += `</div></div>`;
                     }
-                    
+
                     document.getElementById('prestasi-detail-content').innerHTML = content;
                 })
                 .catch(error => {
@@ -334,10 +338,10 @@
         // Format date helper function
         function formatDate(dateString) {
             if (!dateString) return '-';
-            
+
             const date = new Date(dateString);
             if (isNaN(date.getTime())) return dateString; // Handle if date is invalid
-            
+
             const options = { day: 'numeric', month: 'short', year: 'numeric' };
             return date.toLocaleDateString('id-ID', options);
         }
