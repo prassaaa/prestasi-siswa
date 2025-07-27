@@ -258,8 +258,8 @@
     </footer>
 
     <!-- Modal for Lomba Detail -->
-    <div id="lomba-detail-modal" class="fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50 hidden">
-        <div class="bg-white rounded-lg max-w-2xl w-full max-h-screen overflow-y-auto">
+    <div id="lomba-detail-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden p-4">
+        <div class="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div class="p-6">
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="text-xl font-bold" id="modal-title">Detail Lomba</h3>
@@ -293,17 +293,20 @@
                 // Fetch lomba detail and populate modal
                 fetchLombaDetail(lombaId);
                 lombaModal.classList.remove('hidden');
+                lombaModal.classList.add('flex');
             });
         });
 
         closeLombaModal.addEventListener('click', function() {
             lombaModal.classList.add('hidden');
+            lombaModal.classList.remove('flex');
         });
 
         // Close modals when clicking outside
         window.addEventListener('click', function(event) {
             if (event.target == lombaModal) {
                 lombaModal.classList.add('hidden');
+                lombaModal.classList.remove('flex');
             }
         });
 
