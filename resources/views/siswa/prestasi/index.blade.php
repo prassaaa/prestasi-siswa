@@ -107,7 +107,11 @@
                                 </form>
                             @elseif ($item->status_verifikasi == 'rejected')
                                 <a href="{{ route('siswa.prestasi.edit', $item->id) }}" class="text-blue-600 hover:text-blue-900 mr-2">Perbaiki</a>
-                                <span class="text-xs text-gray-500">Prestasi ditolak, silakan perbaiki</span>
+                                <form class="inline-block" action="{{ route('siswa.prestasi.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus prestasi yang ditolak ini?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-red-600 hover:text-red-900">Hapus</button>
+                                </form>
                             @endif
                         </td>
                     </tr>

@@ -163,6 +163,17 @@
                         Hapus Prestasi
                     </button>
                 </form>
+            @elseif ($prestasi->status_verifikasi == 'rejected')
+                <a href="{{ route('siswa.prestasi.edit', $prestasi->id) }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    Perbaiki Prestasi
+                </a>
+                <form action="{{ route('siswa.prestasi.destroy', $prestasi->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus prestasi yang ditolak ini?');">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                        Hapus Prestasi
+                    </button>
+                </form>
             @endif
 
             @if ($prestasi->status_verifikasi == 'approved')
